@@ -49,4 +49,19 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function jwtTokens()
+    {
+        return $this->hasMany(JwtToken::class);
+    }
+
+    public function activeTokens()
+    {
+        return $this->jwtTokens()->active();
+    }
+
+    public function revokeAllTokens()
+    {
+        $this->jwtTokens()->update(['is_revoked' => true]);
+    }
 }

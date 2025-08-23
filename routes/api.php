@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FallbackController;
+use App\Http\Controllers\TaskController;
 
 Route::middleware(['throttle:login'])->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -25,6 +26,12 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('/sessions', [AuthController::class, 'sessions']);
     Route::delete('/sessions/{sessionId}', [AuthController::class, 'revokeSession']);
     Route::get('/login-history', [AuthController::class, 'loginHistory']);
+    Route::get('/tasks', [TaskController::class, 'index']);
+    Route::get('/tasks/{task}', [TaskController::class, 'show']);
+    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::get('/tasks', [TaskController::class, 'index']);
+    Route::put('/tasks/{task}', [TaskController::class, 'update']);
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
 });
 
 Route::get('/email/verify/{token}', [AuthController::class, 'verifyEmail'])

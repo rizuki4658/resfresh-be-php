@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,7 +12,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $title
  * @property string|null $description
  * @property string $status
- * @property string|null $deadline
+ * @property \Illuminate\Support\Carbon|null $deadline
+ * @property \Illuminate\Support\Carbon|null $deadline
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|Task newModelQuery()
@@ -31,5 +31,51 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Task extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'user_id',
+        'title', 
+        'description',
+        'status',
+        'deadline'
+    ];
+
+    protected $casts = [
+        'deadline' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
+    protected $attributes = [
+        'status' => 'pending'
+    ];
+
+    // Relationships
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Scopes
+    public function scopeOwned($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    // Helpers
+    public function isOverdue()
+    {
+        return $this->deadline && $this->deadline->isPast();
+    }
+
+    public function canTransitionTo($status)
+    {
+        $transitions = [
+            'pending' => ['in_progress', 'cancelled'],
+            'in_progress' => ['completed', 'cancelled', 'pending'],
+            'completed' => [],
+            'cancelled' => ['pending']
+        ];
+
+        return in_array($status, $transitions[$this->status] ?? []);
+    }
 }

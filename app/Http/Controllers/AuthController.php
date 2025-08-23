@@ -180,6 +180,7 @@ class AuthController extends Controller
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
             'token_type' => 'bearer',
+            'user_id' => $user->id,
             'expires_in' => config('jwt.ttl') * 60,
         ]);
     }
@@ -217,7 +218,7 @@ class AuthController extends Controller
             
             return response()->json([
                 'message' => 'Successfully logged out from this device'
-            ]);
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to logout',
@@ -244,7 +245,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Successfully logged out from all devices',
                 'revoked_count' => $user->jwtTokens()->count()
-            ]);
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to logout from all devices',

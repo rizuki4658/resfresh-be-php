@@ -22,6 +22,10 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property-read int|null $active_tokens_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\JwtToken> $jwtTokens
  * @property-read int|null $jwt_tokens_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task> $tasks
+ * @property-read int|null $tasks_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task> $pendingTasks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task> $completedTasks
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @method void revokeAllTokens()
@@ -122,5 +126,20 @@ class User extends Authenticatable implements JWTSubject, HasJwtTokens
     public function revokeAllTokens()
     {
         $this->jwtTokens()->update(['is_revoked' => true]);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function pendingTasks()
+    {
+        return $this->tasks()->where('status', 'pending');
+    }
+
+    public function completedTasks()
+    {
+        return $this->tasks()->where('status', 'completed');
     }
 }

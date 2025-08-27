@@ -13,7 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Blok semua request ke web routes
+// Redirect root to index.html
+Route::get('/', function () {
+    return redirect('/index.html');
+});
+
+// Blok semua request lainnya ke web routes
 Route::fallback(function () {
     return response()->json([
         'message' => 'Forbidden'

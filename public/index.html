@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - API Documentation & Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card-description {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .card-features li {
+            padding: 5px 0;
+            color: #555;
+            font-size: 0.9rem;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .card-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .card-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 500;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .difficulty-easy {
+            background: #c6f6d5;
+            color: #22543d;
+            border-color: #9ae6b4;
+        }
+
+        .difficulty-medium {
+            background: #fed7aa;
+            color: #744210;
+            border-color: #fdba74;
+        }
+
+        .difficulty-hard {
+            background: #fed7d7;
+            color: #742a2a;
+            border-color: #fc8181;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            opacity: 0.9;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .api-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .api-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .api-info code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: rgba(72, 187, 120, 0.2);
+            border-radius: 20px;
+            color: #48bb78;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #48bb78;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Task Manager API</h1>
+            <p>Complete API Documentation, Testing Playground, and Implementation Examples</p>
+        </div>
+
+        <div class="api-info">
+            <h3>API Base URL</h3>
+            <code>http://127.0.0.1:8000/api</code>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>API Server Running</span>
+            </div>
+        </div>
+
+        <div class="menu-grid">
+            <a href="/crud_easy.html" class="menu-card">
+                <div class="card-icon">📝</div>
+                <h2 class="card-title">CRUD Easy Mode</h2>
+                <p class="card-description">
+                    Interactive API playground for testing all endpoints with a user-friendly interface.
+                </p>
+                <ul class="card-features">
+                    <li>Authentication (Login/Register)</li>
+                    <li>Task CRUD Operations</li>
+                    <li>User Management</li>
+                    <li>Real-time Response Viewer</li>
+                </ul>
+                <div>
+                    <span class="card-badge difficulty-easy">Easy</span>
+                    <span class="card-badge">Interactive</span>
+                    <span class="card-badge">JWT Auth</span>
+                </div>
+            </a>
+
+            <a href="#" class="menu-card" onclick="alert('CRUD Medium - Coming Soon!'); return false;">
+                <div class="card-icon">⚡</div>
+                <h2 class="card-title">CRUD Medium Mode</h2>
+                <p class="card-description">
+                    Advanced features with filtering, sorting, and pagination for complex data operations.
+                </p>
+                <ul class="card-features">
+                    <li>Advanced Filtering</li>
+                    <li>Multi-field Sorting</li>
+                    <li>Pagination Controls</li>
+                    <li>Bulk Operations</li>
+                </ul>
+                <div>
+                    <span class="card-badge difficulty-medium">Medium</span>
+                    <span class="card-badge">Advanced</span>
+                    <span class="card-badge">Filters</span>
+                </div>
+            </a>
+
+            <a href="#" class="menu-card" onclick="alert('CRUD Hard - Coming Soon!'); return false;">
+                <div class="card-icon">🔥</div>
+                <h2 class="card-title">CRUD Hard Mode</h2>
+                <p class="card-description">
+                    Expert-level features with caching, real-time updates, and performance optimizations.
+                </p>
+                <ul class="card-features">
+                    <li>Redis Caching</li>
+                    <li>WebSocket Real-time</li>
+                    <li>GraphQL Support</li>
+                    <li>Performance Metrics</li>
+                </ul>
+                <div>
+                    <span class="card-badge difficulty-hard">Hard</span>
+                    <span class="card-badge">Expert</span>
+                    <span class="card-badge">Real-time</span>
+                </div>
+            </a>
+
+            <a href="/TaskManager_Postman_Collection.json" download class="menu-card">
+                <div class="card-icon">📦</div>
+                <h2 class="card-title">Postman Collection</h2>
+                <p class="card-description">
+                    Download the complete Postman collection for testing all API endpoints offline.
+                </p>
+                <ul class="card-features">
+                    <li>Pre-configured Requests</li>
+                    <li>Environment Variables</li>
+                    <li>Test Scripts</li>
+                    <li>Documentation</li>
+                </ul>
+                <div>
+                    <span class="card-badge">Download</span>
+                    <span class="card-badge">JSON</span>
+                    <span class="card-badge">Postman</span>
+                </div>
+            </a>
+
+            <a href="#" class="menu-card" onclick="showDocs(); return false;">
+                <div class="card-icon">📚</div>
+                <h2 class="card-title">API Documentation</h2>
+                <p class="card-description">
+                    Complete API reference with request/response examples and authentication guide.
+                </p>
+                <ul class="card-features">
+                    <li>Endpoint Reference</li>
+                    <li>Request Examples</li>
+                    <li>Response Formats</li>
+                    <li>Error Codes</li>
+                </ul>
+                <div>
+                    <span class="card-badge">Docs</span>
+                    <span class="card-badge">Reference</span>
+                    <span class="card-badge">Examples</span>
+                </div>
+            </a>
+
+            <a href="#" class="menu-card" onclick="showInfo(); return false;">
+                <div class="card-icon">ℹ️</div>
+                <h2 class="card-title">System Info</h2>
+                <p class="card-description">
+                    View system information, API status, and configuration details.
+                </p>
+                <ul class="card-features">
+                    <li>Laravel Version</li>
+                    <li>PHP Configuration</li>
+                    <li>Database Status</li>
+                    <li>JWT Settings</li>
+                </ul>
+                <div>
+                    <span class="card-badge">System</span>
+                    <span class="card-badge">Status</span>
+                    <span class="card-badge">Config</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>Built with Laravel & JWT Authentication</p>
+            <p>© 2025 Task Manager API | <a href="https://github.com">GitHub</a></p>
+        </div>
+    </div>
+
+    <script>
+        function showDocs() {
+            alert(`API Documentation
+
+Authentication Endpoints:
+• POST /api/register - Create new account
+• POST /api/login - Login to get JWT token
+• POST /api/logout - Logout current session
+• GET /api/user - Get current user info
+
+Task Endpoints:
+• GET /api/tasks - List all tasks
+• POST /api/tasks - Create new task
+• GET /api/tasks/{id} - Get specific task
+• PUT /api/tasks/{id} - Update task
+• DELETE /api/tasks/{id} - Delete task
+
+All protected endpoints require:
+Authorization: Bearer {token}`);
+        }
+
+        function showInfo() {
+            alert(`System Information
+
+Server: http://127.0.0.1:8000
+Laravel Version: 8.x
+PHP Version: 7.3+
+Database: MySQL
+Auth: JWT (JSON Web Tokens)
+
+Token Expiry: 60 minutes
+Refresh Token: 14 days
+
+Rate Limiting:
+• Login: 5 attempts/minute
+• Register: 3 attempts/minute
+• API: 60 requests/minute`);
+        }
+    </script>
+</body>
+</html>

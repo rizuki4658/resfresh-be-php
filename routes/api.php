@@ -21,6 +21,7 @@ Route::middleware(['throttle:password'])->group(function () {
 // Protected routes - gunakan jwt.verify custom middleware
 Route::middleware(['jwt.verify'])->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/users', [AuthController::class, 'users']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/logout-all', [AuthController::class, 'logoutAll']);
     Route::get('/sessions', [AuthController::class, 'sessions']);

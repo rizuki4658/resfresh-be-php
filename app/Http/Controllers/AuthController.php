@@ -16,6 +16,11 @@ class AuthController extends Controller
 {
     protected $securityService;
 
+    public function __construct(LoginSecurityService $securityService)
+    {
+        $this->securityService = $securityService;
+    }
+
     private function createAccessToken($user)
     {
         $customClaims = [
@@ -41,11 +46,6 @@ class AuthController extends Controller
         JWTAuth::factory()->setTTL(config('jwt.ttl'));
         
         return $token;
-    }
-
-    public function __construct(LoginSecurityService $securityService)
-    {
-        $this->securityService = $securityService;
     }
 
     public function register(Request $request)

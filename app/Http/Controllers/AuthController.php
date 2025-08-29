@@ -190,6 +190,20 @@ class AuthController extends Controller
         return response()->json(auth('api')->user());
     }
 
+    public function users()
+    {
+        $users = User::select('id', 'name', 'email', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Users retrieved successfully',
+            'data' => $users,
+            'total' => $users->count()
+        ]);
+    }
+
     public function logout()
     {
         try {

@@ -28,9 +28,9 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::delete('/sessions/{sessionId}', [AuthController::class, 'revokeSession']);
     Route::get('/login-history', [AuthController::class, 'loginHistory']);
     Route::get('/tasks', [TaskController::class, 'index']);
+    Route::get('/tasks-statistics', [TaskController::class, 'statistics']);
     Route::get('/tasks/{task}', [TaskController::class, 'show']);
     Route::post('/tasks', [TaskController::class, 'store']);
-    Route::get('/tasks', [TaskController::class, 'index']);
     Route::put('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
 });
